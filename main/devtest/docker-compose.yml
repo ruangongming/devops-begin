@@ -1,0 +1,85 @@
+version: '3'
+
+services:
+  hrm-redis:
+    image: redis:7.0
+    container_name: hrm-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hrm-network
+    command: redis-server --requirepass aart@2024
+    volumes:
+      - redis-data:/data
+
+  hrm-sso-service:
+    image: adh1502/hrm-sso-service:0.0.2
+    container_name: hrm-sso-service
+    ports:
+      - "8150:8150"
+    networks:
+      - hrm-network
+    env_file:
+      - .env
+    depends_on:
+      - hrm-redis
+    environment:
+      - SPRING_DATA_REDIS_HOST=hrm-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=aart@2024
+
+  hrm-core-service:
+    image: adh1502/hrm-core-service:0.0.3
+    container_name: hrm-core-service
+    ports:
+      - "8558:8558"
+    networks:
+      - hrm-network
+    env_file:
+      - .env
+    depends_on:
+      - hrm-redis
+    environment:
+      - SPRING_DATA_REDIS_HOST=hrm-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=aart@2024
+
+  hrm-danhmuc-service:
+    image: adh1502/hrm-danhmuc-service:0.0.1
+    container_name: hrm-danhmuc-service
+    ports:
+      - "8410:8410"
+    networks:
+      - hrm-network
+    env_file:
+      - .env
+    depends_on:
+      - hrm-redis
+    environment:
+      - SPRING_DATA_REDIS_HOST=hrm-redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_PASSWORD=aart@2024
+
+  # haproxy:
+  #   image: haproxy:2.4
+  #   container_name: hrm-haproxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./haproxy:/usr/local/etc/haproxy
+  #   networks:
+  #     - hrm-network
+  #   depends_on:
+  #     - hrm-sso-service
+  #     - hrm-core-service
+  #     - hrm-danhmuc-service
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  hrm-network:
+    name: hrm-network
+    external: true

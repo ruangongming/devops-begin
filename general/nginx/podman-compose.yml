@@ -1,0 +1,19 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - ./www:/var/www/html
+    restart: unless-stopped
+    networks:
+      - nginx_network
+
+networks:
+  nginx_network:
+    driver: bridge

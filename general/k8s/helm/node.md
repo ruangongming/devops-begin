@@ -1,0 +1,1 @@
+helm install kong-release kong/ingress -f /root/devops/general/k8s/helm/kong.yaml --namespace driver

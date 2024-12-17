@@ -1,0 +1,6 @@
+hostname: harbor.aart.vn
+certificate: /root/devops/general/harbor_registry/certs/harbor.aart.vn.crt
+private_key: /root/devops/general/harbor_registry/certs/harbor.aart.vn.key
+harbor_admin_password: admin
+password: aart@2024
+data_volume: /data/harbor_data
